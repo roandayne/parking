@@ -64,4 +64,12 @@ export const useStyles = makeStyles((theme) => ({
   parkingButton: {
     height: '100%',
   },
+  notificationRoot: {
+    root: {
+      width: '100%',
+      '& > * + *': {
+        marginTop: theme.spacing(2),
+      },
+    },
+  },
 }))

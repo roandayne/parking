@@ -5,6 +5,8 @@ import { useStyles } from '../style'
 import { Grid, Card, CardContent } from '@material-ui/core'
 import ParkingInput from './ParkingInput'
 import TableComponent from './Table'
+import Filter from './Filter'
+import Notification from './Notification'
 
 const rawRows = []
 const defaultValue = {
@@ -34,6 +36,11 @@ function Dashboard() {
   const [hasSavedSlots, setHasSavedSlots] = useState(true)
   const [rows, setRows] = useState([])
   const [details, setDetails] = useState(defaultValue)
+  const [filteredRows, setFilteredRows] = useState([])
+  const [isFiltered, setIsFiltered] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [message, setMessage] = useState('')
 
   const updateCarDetails = (e) => {
     e.preventDefault()
@@ -48,6 +55,13 @@ function Dashboard() {
 
   const park = (e) => {
     e.preventDefault()
+    setIsOpen(true)
+
+    if (!rows.some((row) => row.status === 'free')) {
+      setMessage('Sorry, parking lot is full')
+      setIsSuccess(false)
+      return
+    }
 
     setDetails({ plateNumber: '', color: '', status: 'free' })
 
@@ -55,7 +69,7 @@ function Dashboard() {
       return row.status === 'free' && row.plateNumber === '' && row.color === ''
     })
 
-    const leastNumber = Math.min.apply(
+    const leastSlotNumber = Math.min.apply(
       Math,
       freeParkingSlots.map(function (slot) {
         return slot.slot
@@ -63,7 +77,7 @@ function Dashboard() {
     )
 
     const rowsCopy = [...rows]
-    const index = rows.findIndex((row) => row.slot === leastNumber)
+    const index = rows.findIndex((row) => row.slot === leastSlotNumber)
     const newParkedCar = {
       slot: rows[index].slot,
       ...details,
@@ -71,6 +85,10 @@ function Dashboard() {
     }
     rowsCopy.splice(index, 1, newParkedCar)
 
+    setIsSuccess(true)
+    setMessage(
+      details.plateNumber + ' can now park at slot number ' + rows[index].slot
+    )
     setRows(rowsCopy)
   }
 
@@ -81,16 +99,54 @@ function Dashboard() {
     const index = rows.findIndex((row) => row.slot === car.slot)
     rowsCopy.splice(index, 1, { slot: rows[index].slot, ...defaultValue })
 
+    setIsSuccess(true)
+    setMessage(car.plateNumber + ' has left the parking lot.')
+    setIsOpen(true)
     setRows(rowsCopy)
   }
 
+  const filter = (e) => {
+    e.preventDefault()
+    const rowsCopy = [...rows]
+
+    if (e.target.value === '') {
+      setIsFiltered(false)
+    }
+
+    const lowerCaseRows = rowsCopy.map((row) => {
+      row[e.target.name] = row[e.target.name].toLowerCase()
+      return row
+    })
+
+    const filteredRows = lowerCaseRows.filter((row) =>
+      row[e.target.name].includes(e.target.value.toLowerCase())
+    )
+
+    setIsFiltered(true)
+    setFilteredRows(filteredRows)
+  }
+
+  const closeNotification = (e) => setIsOpen(false)
+
   useEffect(() => {
     setRows(addRow(slots))
+    // setRows([
+    //   { slot: 1, status: 'occupied', plateNumber: 'ABC-1234', color: 'white' },
+    //   { slot: 2, status: 'occupied', plateNumber: 'ABC-9999', color: 'white' },
+    //   { slot: 3, status: 'occupied', plateNumber: 'ABC-0001', color: 'black' },
+    //   { slot: 4, status: 'free', plateNumber: '', color: '' },
+    //   { slot: 5, status: 'occupied', plateNumber: 'ABC-2701', color: 'blue' },
+    //   { slot: 6, status: 'occupied', plateNumber: 'ABC-3141', color: 'black' },
+    // ])
   }, [slots])
 
   return (
-    // <ParkingContext.Provider value={{ rows }}>
     <Grid container className={classes.gridContainer}>
+      <Notification
+        isOpen={isOpen}
+        message={message}
+        closeNotification={closeNotification}
+      ></Notification>
       {!hasSavedSlots ? (
         <SlotsInput slots={slots} updateSlots={updateSlots}></SlotsInput>
       ) : (
@@ -100,13 +156,17 @@ function Dashboard() {
               park={park}
               details={details}
               updateCarDetails={updateCarDetails}
+              isSuccess={isSuccess}
             ></ParkingInput>
-            <TableComponent rows={rows} leave={leave}></TableComponent>
+            <Filter filter={filter}></Filter>
+            <TableComponent
+              rows={isFiltered ? filteredRows : rows}
+              leave={leave}
+            ></TableComponent>
           </CardContent>
         </Card>
       )}
     </Grid>
-    // </ParkingContext.Provider>
   )
 }
 

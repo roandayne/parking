@@ -30,8 +30,12 @@ function TableComponent({ rows, leave }) {
           {rows.map((row, index) => (
             <TableRow key={index}>
               <TableCell align='right'>{row.slot}</TableCell>
-              <TableCell align='right'>{row.plateNumber}</TableCell>
-              <TableCell align='right'>{row.color}</TableCell>
+              <TableCell align='right' style={{ textTransform: 'uppercase' }}>
+                {row.plateNumber}
+              </TableCell>
+              <TableCell align='right' style={{ textTransform: 'uppercase' }}>
+                {row.color}
+              </TableCell>
               <TableCell align='right'>
                 {row.status !== 'free' ? (
                   <Button
