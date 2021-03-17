@@ -39,4 +39,29 @@ export const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  parkingCardRoot: {
+    width: '80%',
+    padding: '1rem',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  parkingCardContent: {
+    padding: '1rem 0 0 0 !important',
+  },
+  table: {
+    minWidth: 650,
+  },
+  parkingInput: {
+    margin: '1rem 0',
+  },
+  parkingTextField: {
+    margin: '1rem 1rem 0 0',
+  },
+  parkingInputGroup: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  parkingButton: {
+    height: '100%',
+  },
 }))

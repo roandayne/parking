@@ -3,15 +3,18 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import Dashboard from './components/Dashboard'
 import Navigation from './components/Navigation'
 
+
+
 function App() {
   return (
-    <Router>
-      <Navigation />
+    
+      <Router>
+        <Navigation />
 
-      <Switch>
-        <Route path='/' component={Dashboard} />
-      </Switch>
-    </Router>
+        <Switch>
+          <Route path='/' component={Dashboard} />
+        </Switch>
+      </Router>
   )
 }
 
