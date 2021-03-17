@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core'
 import { useStyles } from '../style'
 
-function TableComponent({ rows }) {
+function TableComponent({ rows, leave }) {
   const classes = useStyles()
 
   return (
@@ -34,7 +34,15 @@ function TableComponent({ rows }) {
               <TableCell align='right'>{row.color}</TableCell>
               <TableCell align='right'>
                 {row.status !== 'free' ? (
-                  <Button color='secondary' variant='contained'>
+                  <Button
+                    color='secondary'
+                    variant='contained'
+                    onClick={(e) => {
+                      if (window.confirm('Are you sure the car is leaving?')) {
+                        leave(e, row)
+                      }
+                    }}
+                  >
                     Leave
                   </Button>
                 ) : (

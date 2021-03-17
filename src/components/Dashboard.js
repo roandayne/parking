@@ -6,11 +6,16 @@ import { Grid, Card, CardContent } from '@material-ui/core'
 import ParkingInput from './ParkingInput'
 import TableComponent from './Table'
 
+const rawRows = []
+const defaultValue = {
+  plateNumber: '',
+  color: '',
+  status: 'free',
+}
+
 function createData(slot) {
   return { slot, status: 'free', plateNumber: '', color: '' }
 }
-
-const rawRows = []
 
 function addRow(slots) {
   for (let slot = 0; slot < slots; slot++) {
@@ -28,11 +33,7 @@ function Dashboard() {
   const [slots, setSlots] = useState(6)
   const [hasSavedSlots, setHasSavedSlots] = useState(true)
   const [rows, setRows] = useState([])
-  const [details, setDetails] = useState({
-    plateNumber: '',
-    color: '',
-    status: 'free',
-  })
+  const [details, setDetails] = useState(defaultValue)
 
   const updateCarDetails = (e) => {
     e.preventDefault()
@@ -73,6 +74,16 @@ function Dashboard() {
     setRows(rowsCopy)
   }
 
+  const leave = (e, car) => {
+    e.preventDefault()
+
+    const rowsCopy = [...rows]
+    const index = rows.findIndex((row) => row.slot === car.slot)
+    rowsCopy.splice(index, 1, { slot: rows[index].slot, ...defaultValue })
+
+    setRows(rowsCopy)
+  }
+
   useEffect(() => {
     setRows(addRow(slots))
   }, [slots])
@@ -90,7 +101,7 @@ function Dashboard() {
               details={details}
               updateCarDetails={updateCarDetails}
             ></ParkingInput>
-            <TableComponent rows={rows}></TableComponent>
+            <TableComponent rows={rows} leave={leave}></TableComponent>
           </CardContent>
         </Card>
       )}
