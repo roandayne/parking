@@ -1,10 +1,7 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
 import {
-  Card,
-  CardContent,
   Button,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -33,10 +30,16 @@ function TableComponent({ rows }) {
           {rows.map((row, index) => (
             <TableRow key={index}>
               <TableCell align='right'>{row.slot}</TableCell>
-              <TableCell align='right'>{row.plate}</TableCell>
+              <TableCell align='right'>{row.plateNumber}</TableCell>
               <TableCell align='right'>{row.color}</TableCell>
               <TableCell align='right'>
-                {row.status !== 'free' ? <Button>Leave</Button> : row.status}
+                {row.status !== 'free' ? (
+                  <Button color='secondary' variant='contained'>
+                    Leave
+                  </Button>
+                ) : (
+                  row.status
+                )}
               </TableCell>
             </TableRow>
           ))}

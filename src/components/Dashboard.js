@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react'
 import SlotsInput from './SlotsInput'
 import { useStyles } from '../style'
 
-import { Grid, Card, CardContent, Typography, Paper } from '@material-ui/core'
+import { Grid, Card, CardContent } from '@material-ui/core'
 import ParkingInput from './ParkingInput'
 import TableComponent from './Table'
 
 function createData(slot) {
-  const status = 'free'
-  return { slot, status: status, plate: '', color: '' }
+  return { slot, status: 'free', plateNumber: '', color: '' }
 }
 
 const rawRows = []
@@ -32,12 +31,11 @@ function Dashboard() {
   const [details, setDetails] = useState({
     plateNumber: '',
     color: '',
-    isParked: false,
+    status: 'free',
   })
 
   const updateCarDetails = (e) => {
     e.preventDefault()
-    console.log(e.target.value)
 
     setDetails({ ...details, [e.target.name]: e.target.value })
   }
@@ -50,10 +48,29 @@ function Dashboard() {
   const park = (e) => {
     e.preventDefault()
 
-    setDetails({ ...details, isParked: true })
+    setDetails({ plateNumber: '', color: '', status: 'free' })
 
-    const freeParkingSlots = rows.filter((row) => row.status === 'free')
-    // console.log(freeParkingSlots)
+    const freeParkingSlots = rows.filter((row) => {
+      return row.status === 'free' && row.plateNumber === '' && row.color === ''
+    })
+
+    const leastNumber = Math.min.apply(
+      Math,
+      freeParkingSlots.map(function (slot) {
+        return slot.slot
+      })
+    )
+
+    const rowsCopy = [...rows]
+    const index = rows.findIndex((row) => row.slot === leastNumber)
+    const newParkedCar = {
+      slot: rows[index].slot,
+      ...details,
+      status: 'occupied',
+    }
+    rowsCopy.splice(index, 1, newParkedCar)
+
+    setRows(rowsCopy)
   }
 
   useEffect(() => {
