@@ -7,7 +7,8 @@ import ParkingInput from './ParkingInput'
 import TableComponent from './Table'
 
 function createData(slot) {
-  return { slot, status: 'free', plate: '', color: '' }
+  const status = 'free'
+  return { slot, status: status, plate: '', color: '' }
 }
 
 const rawRows = []
@@ -28,13 +29,18 @@ function Dashboard() {
   const [slots, setSlots] = useState(6)
   const [hasSavedSlots, setHasSavedSlots] = useState(true)
   const [rows, setRows] = useState([])
-  const [isParked, setIsParked] = useState(false)
   const [details, setDetails] = useState({
     plateNumber: '',
     color: '',
+    isParked: false,
   })
 
-  const updateCarDetails = (e) => {}
+  const updateCarDetails = (e) => {
+    e.preventDefault()
+    console.log(e.target.value)
+
+    setDetails({ ...details, [e.target.name]: e.target.value })
+  }
 
   const updateSlots = (e) => {
     setSlots(e.target.value)
@@ -43,9 +49,11 @@ function Dashboard() {
 
   const park = (e) => {
     e.preventDefault()
-    console.log(rows)
 
-    // setIsParked(true)
+    setDetails({ ...details, isParked: true })
+
+    const freeParkingSlots = rows.filter((row) => row.status === 'free')
+    // console.log(freeParkingSlots)
   }
 
   useEffect(() => {
@@ -63,7 +71,6 @@ function Dashboard() {
             <ParkingInput
               park={park}
               details={details}
-              isParked={isParked}
               updateCarDetails={updateCarDetails}
             ></ParkingInput>
             <TableComponent rows={rows}></TableComponent>
