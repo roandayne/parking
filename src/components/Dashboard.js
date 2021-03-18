@@ -8,6 +8,8 @@ import TableComponent from './Table'
 import Filter from './Filter'
 import Notification from './Notification'
 
+let filterValueColor
+let filterValuePlateNumber
 const rawRows = []
 const defaultValue = {
   plateNumber: '',
@@ -26,8 +28,6 @@ function addRow(slots) {
 
   return rawRows
 }
-
-// export const ParkingContext = React.createContext()
 
 function Dashboard() {
   const classes = useStyles()
@@ -107,20 +107,41 @@ function Dashboard() {
 
   const filter = (e) => {
     e.preventDefault()
+
+    let filteredRows
+
     const rowsCopy = [...rows]
-
-    if (e.target.value === '') {
-      setIsFiltered(false)
-    }
-
     const lowerCaseRows = rowsCopy.map((row) => {
       row[e.target.name] = row[e.target.name].toLowerCase()
       return row
     })
 
-    const filteredRows = lowerCaseRows.filter((row) =>
-      row[e.target.name].includes(e.target.value.toLowerCase())
-    )
+    if (e.target.value === '') {
+      setIsFiltered(false)
+    }
+
+    if (e.target.name === 'color') {
+      filterValueColor = e.target.value
+    }
+
+    if (e.target.name === 'plateNumber') {
+      filterValuePlateNumber = e.target.value
+    }
+
+    if (filterValueColor && filterValuePlateNumber) {
+      console.log('lowerCaseRows', lowerCaseRows)
+
+      filteredRows = lowerCaseRows.filter((row) => {
+        return (
+          row.color.includes(filterValueColor.toLowerCase()) &&
+          row.plateNumber.includes(filterValuePlateNumber.toLowerCase())
+        )
+      })
+    } else {
+      filteredRows = lowerCaseRows.filter((row) =>
+        row[e.target.name].includes(e.target.value.toLowerCase())
+      )
+    }
 
     setIsFiltered(true)
     setFilteredRows(filteredRows)
@@ -134,7 +155,7 @@ function Dashboard() {
     //   { slot: 1, status: 'occupied', plateNumber: 'ABC-1234', color: 'white' },
     //   { slot: 2, status: 'occupied', plateNumber: 'ABC-9999', color: 'white' },
     //   { slot: 3, status: 'occupied', plateNumber: 'ABC-0001', color: 'black' },
-    //   { slot: 4, status: 'free', plateNumber: '', color: '' },
+    //   { slot: 4, status: 'occupied', plateNumber: 'SNC-1234', color: 'white' },
     //   { slot: 5, status: 'occupied', plateNumber: 'ABC-2701', color: 'blue' },
     //   { slot: 6, status: 'occupied', plateNumber: 'ABC-3141', color: 'black' },
     // ])
@@ -158,7 +179,9 @@ function Dashboard() {
               updateCarDetails={updateCarDetails}
               isSuccess={isSuccess}
             ></ParkingInput>
-            <Filter filter={filter}></Filter>
+            <Filter
+              filter={filter}
+            ></Filter>
             <TableComponent
               rows={isFiltered ? filteredRows : rows}
               leave={leave}

@@ -2,7 +2,10 @@ import React from 'react'
 import { useStyles } from '../style'
 import { TextField, Typography } from '@material-ui/core'
 
-function Filter({ filter }) {
+function Filter({ filter, 
+  // filteredByPlateNumber, 
+  // filteredByColor 
+}) {
   const classes = useStyles()
 
   return (
@@ -13,7 +16,7 @@ function Filter({ filter }) {
           name='color'
           className={classes.parkingTextField}
           label='Color'
-          // value={details.plateNumber}
+          // value={filteredByColor}
           variant='outlined'
           onChange={filter}
         />
@@ -21,7 +24,7 @@ function Filter({ filter }) {
           name='plateNumber'
           className={classes.parkingTextField}
           label='Plate Number'
-          // value={details.plateNumber}
+          // value={filteredByPlateNumber}
           variant='outlined'
           onChange={filter}
           // onChange={updateCarDetails}
