@@ -9,7 +9,10 @@ function Alert(props) {
 function Notification({ message, closeNotification, isOpen, isSuccess }) {
   return (
     <Snackbar open={isOpen} autoHideDuration={6000} onClick={closeNotification}>
-      <Alert onClose={closeNotification} severity='success'>
+      <Alert
+        onClose={closeNotification}
+        severity={isSuccess ? 'success' : 'error'}
+      >
         {message}
       </Alert>
     </Snackbar>

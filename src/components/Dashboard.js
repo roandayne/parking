@@ -8,17 +8,19 @@ import TableComponent from './Table'
 import Filter from './Filter'
 import Notification from './Notification'
 
+import { FREE_STATUS, OCCUPIED_STATUS, NOT_FOUND_STATUS } from '../constants'
+
 let filterValueColor
 let filterValuePlateNumber
 const rawRows = []
 const defaultValue = {
   plateNumber: '',
   color: '',
-  status: 'free',
+  status: FREE_STATUS,
 }
 
 function createData(slot) {
-  return { slot, status: 'free', plateNumber: '', color: '' }
+  return { slot, status: FREE_STATUS, plateNumber: '', color: '' }
 }
 
 function addRow(slots) {
@@ -32,8 +34,8 @@ function addRow(slots) {
 function Dashboard() {
   const classes = useStyles()
 
-  const [slots, setSlots] = useState(6)
-  const [hasSavedSlots, setHasSavedSlots] = useState(true)
+  const [slots, setSlots] = useState(0)
+  const [hasSavedSlots, setHasSavedSlots] = useState(false)
   const [rows, setRows] = useState([])
   const [details, setDetails] = useState(defaultValue)
   const [filteredRows, setFilteredRows] = useState([])
@@ -49,24 +51,35 @@ function Dashboard() {
   }
 
   const updateSlots = (e) => {
+    e.preventDefault()
+
     setSlots(e.target.value)
-    setHasSavedSlots(true)
+  }
+
+  const saveSlots = (e) => {
+    e.preventDefault()
+
+    if (slots) {
+      setHasSavedSlots(true)
+    }
   }
 
   const park = (e) => {
     e.preventDefault()
     setIsOpen(true)
 
-    if (!rows.some((row) => row.status === 'free')) {
+    if (!rows.some((row) => row.status === FREE_STATUS)) {
       setMessage('Sorry, parking lot is full')
       setIsSuccess(false)
       return
     }
 
-    setDetails({ plateNumber: '', color: '', status: 'free' })
+    setDetails({ plateNumber: '', color: '', status: FREE_STATUS })
 
     const freeParkingSlots = rows.filter((row) => {
-      return row.status === 'free' && row.plateNumber === '' && row.color === ''
+      return (
+        row.status === FREE_STATUS && row.plateNumber === '' && row.color === ''
+      )
     })
 
     const leastSlotNumber = Math.min.apply(
@@ -81,7 +94,7 @@ function Dashboard() {
     const newParkedCar = {
       slot: rows[index].slot,
       ...details,
-      status: 'occupied',
+      status: OCCUPIED_STATUS,
     }
     rowsCopy.splice(index, 1, newParkedCar)
 
@@ -103,6 +116,7 @@ function Dashboard() {
     setMessage(car.plateNumber + ' has left the parking lot.')
     setIsOpen(true)
     setRows(rowsCopy)
+    setIsFiltered(false)
   }
 
   const filter = (e) => {
@@ -110,8 +124,7 @@ function Dashboard() {
 
     let filteredRows
 
-    const rowsCopy = [...rows]
-    const lowerCaseRows = rowsCopy.map((row) => {
+    const lowerCaseRows = rows.map((row) => {
       row[e.target.name] = row[e.target.name].toLowerCase()
       return row
     })
@@ -129,8 +142,6 @@ function Dashboard() {
     }
 
     if (filterValueColor && filterValuePlateNumber) {
-      console.log('lowerCaseRows', lowerCaseRows)
-
       filteredRows = lowerCaseRows.filter((row) => {
         return (
           row.color.includes(filterValueColor.toLowerCase()) &&
@@ -143,6 +154,21 @@ function Dashboard() {
       )
     }
 
+    if (filteredRows.length === 0) {
+      filteredRows = [
+        {
+          slot: 0,
+          status: NOT_FOUND_STATUS,
+          plateNumber: '',
+          color: '',
+        },
+      ]
+
+      setIsSuccess(false)
+      setIsOpen(true)
+      setMessage('Sorry, ' + e.target.value + ' not found')
+    }
+
     setIsFiltered(true)
     setFilteredRows(filteredRows)
   }
@@ -151,14 +177,6 @@ function Dashboard() {
 
   useEffect(() => {
     setRows(addRow(slots))
-    // setRows([
-    //   { slot: 1, status: 'occupied', plateNumber: 'ABC-1234', color: 'white' },
-    //   { slot: 2, status: 'occupied', plateNumber: 'ABC-9999', color: 'white' },
-    //   { slot: 3, status: 'occupied', plateNumber: 'ABC-0001', color: 'black' },
-    //   { slot: 4, status: 'occupied', plateNumber: 'SNC-1234', color: 'white' },
-    //   { slot: 5, status: 'occupied', plateNumber: 'ABC-2701', color: 'blue' },
-    //   { slot: 6, status: 'occupied', plateNumber: 'ABC-3141', color: 'black' },
-    // ])
   }, [slots])
 
   return (
@@ -167,9 +185,13 @@ function Dashboard() {
         isOpen={isOpen}
         message={message}
         closeNotification={closeNotification}
-      ></Notification>
+      />
       {!hasSavedSlots ? (
-        <SlotsInput slots={slots} updateSlots={updateSlots}></SlotsInput>
+        <SlotsInput
+          slots={slots}
+          updateSlots={updateSlots}
+          saveSlots={saveSlots}
+        />
       ) : (
         <Card className={classes.parkingCardRoot}>
           <CardContent className={classes.parkingCardContent}>
@@ -178,14 +200,12 @@ function Dashboard() {
               details={details}
               updateCarDetails={updateCarDetails}
               isSuccess={isSuccess}
-            ></ParkingInput>
-            <Filter
-              filter={filter}
-            ></Filter>
+            />
+            <Filter filter={filter} />
             <TableComponent
               rows={isFiltered ? filteredRows : rows}
               leave={leave}
-            ></TableComponent>
+            />
           </CardContent>
         </Card>
       )}

@@ -46,7 +46,7 @@ export const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   parkingCardContent: {
-    padding: '1rem 0 0 0 !important',
+    padding: '0 0 0 0 !important',
   },
   table: {
     minWidth: 650,
@@ -71,5 +71,8 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
       },
     },
+  },
+  alignCenter: {
+    textAlign: 'center',
   },
 }))

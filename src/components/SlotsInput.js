@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core'
 import { useStyles } from '../style'
 
-function SlotsInput({ slots, updateSlots }) {
+function SlotsInput({ slots, updateSlots, saveSlots }) {
   const classes = useStyles()
 
   return (
@@ -34,6 +34,7 @@ function SlotsInput({ slots, updateSlots }) {
           className={classes.cardButton}
           variant='contained'
           color='primary'
+          onClick={saveSlots}
         >
           SAVE
         </Button>

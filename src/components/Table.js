@@ -1,4 +1,5 @@
 import React from 'react'
+import { useStyles } from '../style'
 
 import {
   Button,
@@ -9,8 +10,10 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Typography,
 } from '@material-ui/core'
-import { useStyles } from '../style'
+
+import { FREE_STATUS, OCCUPIED_STATUS, NOT_FOUND_STATUS } from '../constants'
 
 function TableComponent({ rows, leave }) {
   const classes = useStyles()
@@ -20,24 +23,47 @@ function TableComponent({ rows, leave }) {
       <Table className={classes.table} aria-label='simple table'>
         <TableHead>
           <TableRow>
-            <TableCell>Slot Number</TableCell>
-            <TableCell align='right'>Plate Number</TableCell>
-            <TableCell align='right'>Color</TableCell>
-            <TableCell align='right'>Action/Status</TableCell>
+            <TableCell className={classes.alignCenter}>Slot Number</TableCell>
+            <TableCell className={classes.alignCenter} align='right'>
+              Plate Number
+            </TableCell>
+            <TableCell className={classes.alignCenter} align='right'>
+              Color
+            </TableCell>
+            <TableCell className={classes.alignCenter} align='right'>
+              Action/Status
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row, index) => (
             <TableRow key={index}>
-              <TableCell align='right'>{row.slot}</TableCell>
-              <TableCell align='right' style={{ textTransform: 'uppercase' }}>
+              <TableCell className={classes.alignCenter} align='right'>
+                {row.slot}
+              </TableCell>
+              <TableCell
+                className={classes.alignCenter}
+                align='right'
+                style={{ textTransform: 'uppercase' }}
+              >
                 {row.plateNumber}
               </TableCell>
-              <TableCell align='right' style={{ textTransform: 'uppercase' }}>
+              <TableCell
+                className={classes.alignCenter}
+                align='right'
+                style={{ textTransform: 'uppercase' }}
+              >
                 {row.color}
               </TableCell>
-              <TableCell align='right'>
-                {row.status !== 'free' ? (
+              <TableCell
+                className={classes.alignCenter}
+                align='right'
+                style={{ textTransform: 'uppercase' }}
+              >
+                {row.status === FREE_STATUS ||
+                row.status === NOT_FOUND_STATUS ? (
+                  row.status
+                ) : (
                   <Button
                     color='secondary'
                     variant='contained'
@@ -49,8 +75,6 @@ function TableComponent({ rows, leave }) {
                   >
                     Leave
                   </Button>
-                ) : (
-                  row.status
                 )}
               </TableCell>
             </TableRow>
