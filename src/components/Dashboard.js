@@ -68,7 +68,14 @@ function Dashboard() {
     e.preventDefault()
     setIsOpen(true)
 
+    if (details.plateNumber === '' || details.color === '') {
+      setIsSuccess(false)
+      setMessage('Please fill in plate number and car color')
+      return
+    }
+
     if (!rows.some((row) => row.status === FREE_STATUS)) {
+      setDetails(defaultValue)
       setMessage('Sorry, parking lot is full')
       setIsSuccess(false)
       return
@@ -185,6 +192,7 @@ function Dashboard() {
         isOpen={isOpen}
         message={message}
         closeNotification={closeNotification}
+        isSuccess={isSuccess}
       />
       {!hasSavedSlots ? (
         <SlotsInput
@@ -199,7 +207,6 @@ function Dashboard() {
               park={park}
               details={details}
               updateCarDetails={updateCarDetails}
-              isSuccess={isSuccess}
             />
             <Filter filter={filter} />
             <TableComponent

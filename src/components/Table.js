@@ -10,10 +10,9 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography,
 } from '@material-ui/core'
 
-import { FREE_STATUS, OCCUPIED_STATUS, NOT_FOUND_STATUS } from '../constants'
+import { FREE_STATUS, NOT_FOUND_STATUS } from '../constants'
 
 function TableComponent({ rows, leave }) {
   const classes = useStyles()
